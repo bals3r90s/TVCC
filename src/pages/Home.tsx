@@ -1,39 +1,53 @@
-import React from "react";
+import Navbar from "@/components/ui/navbar.tsx";
+import React, { useState } from "react";
 
 export default function Home() {
+    const [selectedAutomarke, setSelectedAutomarke] = useState([]);
+    const [selectedLagerbedingungen, setSelectedLagerbedingungen] = useState([]);
+    const [selectedStadt, setSelectedStadt] = useState([]);
+
+    const [dropdowns, setDropdowns] = useState({
+        automarke: false,
+        lagerbedingungen: false,
+        stadt: false,
+    });
+
+    const automarkenOptions = ["Audi", "BMW", "Mercedes", "Volkswagen"];
+    const lagerbedingungenOptions = ["24h Zugang", "Klimatisiert", "Videoüberwachung", "Glasbox"];
+    const stadtOptions = ["Gießen", "Frankfurt", "Berlin", "Hamburg"];
+
+    const toggleDropdown = (field) => {
+        setDropdowns((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
+    };
+
+    const toggleSelection = (option, selectedList, setSelectedList) => {
+        if (selectedList.includes(option)) {
+            setSelectedList(selectedList.filter((item) => item !== option));
+        } else {
+            setSelectedList([...selectedList, option]);
+        }
+    };
+
+    const closeAllDropdowns = () => {
+        setDropdowns({
+            automarke: false,
+            lagerbedingungen: false,
+            stadt: false,
+        });
+    };
+
     return (
-        <div className="flex flex-col w-full min-h-screen bg-gray-100">
-            {/* Header */}
-            <header className="flex items-center justify-between bg-blue-600 text-white px-8 py-4 w-full">
-                <div className="flex items-center">
-                    <img
-                        src="/TVCC_Logo.png"
-                        alt="Vintage Car Community Logo"
-                        className="h-12 mr-4"
-                    />
-                    <h1 className="text-xl font-bold">Vintage Car Community</h1>
-                </div>
-                <nav className="flex space-x-6">
-                    <a href="#" className="bg-white text-blue-600 px-4 py-2 rounded-full hover:shadow-md">
-                        Home
-                    </a>
-                    <a href="#" className="bg-white text-blue-600 px-4 py-2 rounded-full hover:shadow-md">
-                        Ersatzteile
-                    </a>
-                    <a href="#" className="bg-white text-blue-600 px-4 py-2 rounded-full hover:shadow-md">
-                        Mein Lagerplatz
-                    </a>
-                    <a href="#" className="bg-white text-blue-600 px-4 py-2 rounded-full hover:shadow-md">
-                        Nachrichten
-                    </a>
-                    <a href="#" className="bg-white text-blue-600 px-4 py-2 rounded-full hover:shadow-md">
-                        Konto
-                    </a>
-                </nav>
-            </header>
+        <div className="flex flex-col w-full h-screen">
+            <Navbar />
 
             {/* Main Content */}
-            <main className="flex flex-col items-center justify-center flex-grow w-full px-8 py-12">
+            <main
+                className="flex flex-col items-center justify-center flex-grow w-full px-8 py-12 bg-gray-100"
+                onClick={closeAllDropdowns} // Schließt alle Dropdowns, wenn außerhalb geklickt wird
+            >
                 {/* Begrüßung */}
                 <h2 className="text-3xl font-semibold mb-4 text-center">
                     Willkommen bei der{" "}
@@ -50,35 +64,123 @@ export default function Home() {
                 </h3>
 
                 {/* Suchleiste */}
-                <div className="bg-gray-200 rounded-lg p-8 shadow-lg w-full max-w-4xl">
+                <div className="bg-gray-200 rounded-lg p-6 shadow-lg w-full max-w-4xl">
                     <div className="flex items-center space-x-4">
-                        <div className="flex flex-col w-1/3">
+                        {/* Automarke Dropdown */}
+                        <div className="flex flex-col w-1/3 relative">
                             <label className="text-sm font-medium mb-1">Deine Automarke</label>
-                            <input
-                                type="text"
-                                value="Audi"
-                                readOnly
-                                className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 cursor-not-allowed"
-                            />
+                            <button
+                                className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 text-left"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleDropdown("automarke");
+                                }}
+                            >
+                                {selectedAutomarke.length > 0
+                                    ? selectedAutomarke.join(", ")
+                                    : "Bitte wählen"}
+                            </button>
+                            {dropdowns.automarke && (
+                                <div className="absolute bg-white border rounded-lg shadow-lg w-full mt-2 z-10 max-h-48 overflow-y-auto">
+                                    {automarkenOptions.map((marke) => (
+                                        <div
+                                            key={marke}
+                                            className="flex items-center px-4 py-2 hover:bg-gray-100"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedAutomarke.includes(marke)}
+                                                onChange={() =>
+                                                    toggleSelection(marke, selectedAutomarke, setSelectedAutomarke)
+                                                }
+                                                className="mr-2"
+                                            />
+                                            <label>{marke}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        <div className="flex flex-col w-1/3">
+
+                        {/* Lagerbedingungen Dropdown */}
+                        <div className="flex flex-col w-1/3 relative">
                             <label className="text-sm font-medium mb-1">Lagerbedingungen</label>
-                            <input
-                                type="text"
-                                value="24h Zugang"
-                                readOnly
-                                className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 cursor-not-allowed"
-                            />
+                            <button
+                                className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 text-left"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleDropdown("lagerbedingungen");
+                                }}
+                            >
+                                {selectedLagerbedingungen.length > 0
+                                    ? selectedLagerbedingungen.join(", ")
+                                    : "Bitte wählen"}
+                            </button>
+                            {dropdowns.lagerbedingungen && (
+                                <div className="absolute bg-white border rounded-lg shadow-lg w-full mt-2 z-10 max-h-48 overflow-y-auto">
+                                    {lagerbedingungenOptions.map((bedingung) => (
+                                        <div
+                                            key={bedingung}
+                                            className="flex items-center px-4 py-2 hover:bg-gray-100"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedLagerbedingungen.includes(bedingung)}
+                                                onChange={() =>
+                                                    toggleSelection(
+                                                        bedingung,
+                                                        selectedLagerbedingungen,
+                                                        setSelectedLagerbedingungen
+                                                    )
+                                                }
+                                                className="mr-2"
+                                            />
+                                            <label>{bedingung}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        <div className="flex flex-col w-1/3">
+
+                        {/* Stadt Dropdown */}
+                        <div className="flex flex-col w-1/3 relative">
                             <label className="text-sm font-medium mb-1">Stadt</label>
-                            <input
-                                type="text"
-                                value="35390 Gießen"
-                                readOnly
-                                className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 cursor-not-allowed"
-                            />
+                            <button
+                                className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 text-left"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleDropdown("stadt");
+                                }}
+                            >
+                                {selectedStadt.length > 0
+                                    ? selectedStadt.join(", ")
+                                    : "Bitte wählen"}
+                            </button>
+                            {dropdowns.stadt && (
+                                <div className="absolute bg-white border rounded-lg shadow-lg w-full mt-2 z-10 max-h-48 overflow-y-auto">
+                                    {stadtOptions.map((stadt) => (
+                                        <div
+                                            key={stadt}
+                                            className="flex items-center px-4 py-2 hover:bg-gray-100"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedStadt.includes(stadt)}
+                                                onChange={() =>
+                                                    toggleSelection(stadt, selectedStadt, setSelectedStadt)
+                                                }
+                                                className="mr-2"
+                                            />
+                                            <label>{stadt}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                    </div>
+
+                    {/* Suchen Button */}
+                    <div className="flex justify-end mt-4">
                         <button className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700">
                             <span className="text-lg">🔍</span>
                         </button>
@@ -90,7 +192,7 @@ export default function Home() {
                     <img
                         src="/home-car.png"
                         alt="Vintage Car"
-                        className="max-w-full h-auto "
+                        className="max-w-full h-auto"
                     />
                 </div>
             </main>
